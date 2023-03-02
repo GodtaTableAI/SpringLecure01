@@ -44,7 +44,7 @@ public class Order {
     }
 
     public void setDiscountPrice(int discountPrice) {
-        this.discountPrice = discountPrice;
+        this.discountPrice = discountPrice ;
     }
 
     @Override
