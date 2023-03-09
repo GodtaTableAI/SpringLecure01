@@ -1,10 +1,11 @@
 package hello.core.order;
 
 import hello.core.AppConfig;
-import hello.core.memeber.Grade;
-import hello.core.memeber.Member;
-import hello.core.memeber.MemberService;
-import hello.core.memeber.MemberServiceImpl;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemberService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class OrderApp {
 
@@ -12,10 +13,13 @@ public class OrderApp {
 
     public static void main(String[] args) {
 
-        AppConfig appConfig = new AppConfig();
+        //AppConfig appConfig = new AppConfig();
+        //MemberService memberService = appConfig.memberService();
+        //OrderService orderService = appConfig.orderService();
 
-        MemberService memberService = appConfig.memberService();
-        OrderService orderService = appConfig.orderService();
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        MemberService memberService = applicationContext.getBean("memberService", MemberService.class);
+        OrderService orderService = applicationContext.getBean("orderService", OrderService.class);
 
         Long memberId=1L;
 

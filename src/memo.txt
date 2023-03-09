@@ -1,0 +1,74 @@
+
+# 옵션처리
+* AutowiredTest
+Member는 스프링빈에 없어서 원래는 오류가 나야한다.
+required=false 하거나
+@Nullable 하면 null 들어가서 돌아가고
+Optional로 감싸면 Optional.emtpy 로 돌아감.
+
+# 생성자 주입을 선택해라 !
+"불변"
+대부분의 의존관계 주입은 한번 일어나면 에플리케이션 종료시점까지 의존관계를 변경할 일이 없다.
+수정자주입을 사용하면 setXxx메서드를 public으로 열어두어야 한다->누군가가 실수로 변경할 수 있어 문제가 된다.
+생성자주입은 객체를 생성할때 딱 1번만 호출되므로 이후에 호출되는 일이 없다.
+"누락"
+* OrderServiceImplTest
+생성자 주입으로 하면 순수한 자바 코드 테스트가 가능하다.?
+final을 쓸수있다. (생성자에서 혹시라도 값이 설정되지 않는 오류를 컴파일 시점에 막아준다.)
+
+# 롬복과 최신 트렌드
+그래들에서 롬복 추가.
+PlugIn에서 Lombok 다운받기.
+file-setting Annotation Processors 메뉴에 Enable annotation processing 켜기.
+@RequiredArgsConstructor 쓰면 final이 붙은 핖드를 모아 생성자 자동으로 만들어 줌.(ctrl+F12로 확인)
+
+# 조회 빈이 2개 이상 - 문제
+@Autowired는 타입으로 조회한다.
+예를들어 DiscountPolicy에 fix,rate 구현체에 둘다 @Component 하면 타입이 같은 두개의 빈이 발견되서 오류남.
+
+# @Autowired 필드명 , @Qualifier , @Primary
+조회대상 빈이 2개이상 일때 해결 방법.
+1. @Autowired 필드명 매칭 (파라미터나 필드 명 똑같이하면 됨)
+2. @Quilifier 빈이름 지정해서 매칭. 파라미터에 넣을 수도 있음.
+3. @Primary가 있으면 여러타입중에 이거만 된다.
+* HelloLombok
+
+# 애노테이션 직접 만들기
+@애노테이션class 만든 후, @Qualifier 의 @애노테이션들 복붙 + @Qualifier
+@Qualifier 쓰듯이 RateDiscountPolicy 클래스 위, OrderServiceImple 파라미터에 선언.
+
+# 조회한 빈이 모두 필요할 때 , List, Map
+* AllBeanTest , Map에 모든 빈 넣고 봄.
+
+# 빈 생명주기 콜백
+스프링은 의존관계 주입이 완료되면 스프링 빈에게 콜백 메서드를 통해서 초기화 시점을 알려주는 다양한 기능을 제공.
+-스프링빈의 이벤트 라이프사이클
+스프링컨테이너 생성 -> 스프링빈 생성 -> 의존관계주입 ->초기화 콜백 -> 사용 ->소멸전 콜백 ->스프링 종료
+
+1. 인터페이스 (잘 사용안함)
+implements InitializingBean, DisposableBean 참조 후 함수 구현.
+
+2. 빈 등록 초기화,소멸 메서드 (외부라이브러리를 초기화,종료해야할 떄)
+@Bean(initMethod = "init",destroyMethod = "close")
+init , close 함수 구현
+
+3.애노테이션 @PostConstruct , @PreDestroy (이방법을 많이씀)
+
+# 빈 스코프람
+* TEST-scope
+1. 프로토타입 빈의 생성과 읜존관꼐 주입까지만 관여하고 더는 관리하지 않는 매우 짧은 범위의 스코프
+2. request 웹요청이 들어오고 나갈떄 까지 유지되는 스코프
+3. session 웹 세션이 생성되고 종료될 떄 까지 유지되는 스코프
+4. application 웹의 서블릿 컨텍스와 같은 범위로 유지되는 스코프.
+
+# 프로토타입 스코프- 싱글톤 빈과 함께 사용시 문제점
+* SingletonWithPrototypeTest
+싱글톤 안에 프로토타입빈을 쓰면 싱글톤처럼 움직인다.
+그걸 해결하기 위해 ObjectProvider 써서 프로토타입빈을 받으면 해결 됨.(Spring에 의존적)
+implementation 'javax.inject:javax.inject:1' 쓰는 방법.(자바표준)
+
+
+# Request 스코프 예제 만들기.
+@Scope(value = "request",proxyMode = ScopedProxyMode.TARGET_CLASS) 이거 쓰면 됨.
+
+

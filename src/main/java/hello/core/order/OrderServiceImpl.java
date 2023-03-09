@@ -1,12 +1,16 @@
 package hello.core.order;
 
+import hello.core.annotation.MainDiscountPolicy;
 import hello.core.discount.DiscountPolicy;
-import hello.core.discount.FixDiscountPolicy;
-import hello.core.discount.RateDiscountPolicy;
-import hello.core.memeber.Member;
-import hello.core.memeber.MemberRepository;
-import hello.core.memeber.MemoryMemberRepository;
+import hello.core.member.Member;
+import hello.core.member.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
+//@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
 
     // 이렇게 하면 DI 위반. client에서는 인터페이스만 의존하도록.
@@ -14,9 +18,10 @@ public class OrderServiceImpl implements OrderService{
     //private final DiscountPolicy discountPolicy = new RateDiscountPolicy();
 
     private final MemberRepository memberRepository;
-    private  DiscountPolicy discountPolicy ;
+    private final  DiscountPolicy discountPolicy ;
 
-    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+    //@Autowired // 생성자가 하나만 있으면 Autowired 생략해도 된다.
+    public OrderServiceImpl(MemberRepository memberRepository,@MainDiscountPolicy DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
